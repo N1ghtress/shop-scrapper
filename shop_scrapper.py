@@ -23,17 +23,14 @@ def scrap_urls(urls, fields):
 def scrap_amazon(html, fields):
     # Sometimes doesn't work, Samsung 970 EVO SSD NVMe 2To
     product = html.find(".product-title-word-break", first=True)
-    if product:
-        product = product.text.strip(stripped)
-    
-    price_whole = html.find(".a-price-whole", first=True)
-    if price_whole:
-        price_whole = price_whole.text.strip(stripped) 
-    price_fraction = html.find(".a-price-fraction", first=True)
-    if price_fraction:
-        price_fraction = price_fraction.text.strip(stripped)
     price = None
-    if price_whole and price_fraction:
+    price_whole = html.find(".a-price-whole", first=True)
+    price_fraction = html.find(".a-price-fraction", first=True)
+
+    if product and price_whole and price_fraction:
+        product = product.text.strip(stripped)
+        price_whole = price_whole.text.strip(stripped) 
+        price_fraction = price_fraction.text.strip(stripped)
         price = int(price_whole) + int(price_fraction) / 100
     
     return (product, price)
@@ -42,20 +39,20 @@ def scrap_cdiscount(html, fields):
     # Need javascript support somehow...
     html.render()
     product = html.find(".fpDesCol", first=True)
-    if product:
+    price = html.find(".fpPrice", first=True)
+
+    if product and price:
         product = product.text.strip(stripped)
-    price = html.find(".fpPrice")
-    if price:
         price = price.attrs["content"]
     
     return (product, price)
 
 def scrap_decathlon(html, fields):
     product = html.find("h1", first=True)
-    if product:
-        product = product.text.strip(stripped)
     price = html.find(".prc__active-price", first=True)
-    if price:
+
+    if product and price:
+        product = product.text.strip(stripped)
         price = price.attrs["content"]
 
     return (product, price)
